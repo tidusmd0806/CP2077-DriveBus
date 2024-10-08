@@ -16,8 +16,9 @@ function Event:New()
     -- static --
     obj.bus_size = { max_x = 1.2, min_x = -1.2, max_y = 5.0, min_y = -3.0, max_z = 1.8, min_z = 0 }
     obj.seat_entry_area_list = {
-        { max_x = 1.0, min_x = -1.0, max_y = 3.6, min_y = 2.4, max_z = 1.8, min_z = 0 },
-        { max_x = 1.0, min_x = -1.0, max_y = -0.2, min_y = -1.2, max_z = 1.8, min_z = 0 }}
+        { max_x = 0.5, min_x = -0.5, max_y = 4.2, min_y = 3.5, max_z = 1.8, min_z = 0 },
+        { max_x = 0.5, min_x = -0.5, max_y = 3.5, min_y = 2.4, max_z = 1.8, min_z = 0 },
+        { max_x = 0.5, min_x = -0.5, max_y = -0.2, min_y = -1.2, max_z = 1.8, min_z = 0 }}
     obj.choice_both_angle_large_min = 140
     obj.choice_both_angle_small_max = 40
     obj.door_control_distance = 10
@@ -249,24 +250,30 @@ function Event:CheckInFrontOfUserSeat()
             and player_local_pos.y < seat_area.max_y and player_local_pos.y > seat_area.min_y
                 and player_local_pos.z < seat_area.max_z and player_local_pos.z > seat_area.min_z then
             local local_angle = self.bus_obj:GetPlayerLookAngle()
+            -- front left seat
             if index == 1 then
-                if math.abs(local_angle) < self.choice_both_angle_small_max or math.abs(local_angle) > self.choice_both_angle_large_min then
-                    if self.choice_variation ~= Def.ChoiceVariation.FrontBoth then
-                        self.hud_obj:ShowChoice(Def.ChoiceVariation.FrontBoth)
-                    end
-                    self.choice_variation = Def.ChoiceVariation.FrontBoth
-                elseif local_angle > 0 then
+                if local_angle > 0 then
                     if self.choice_variation ~= Def.ChoiceVariation.FrontLeft then
                         self.hud_obj:ShowChoice(Def.ChoiceVariation.FrontLeft)
                     end
                     self.choice_variation = Def.ChoiceVariation.FrontLeft
-                elseif local_angle < 0 then
+                else
+                    self.choice_variation = Def.ChoiceVariation.None
+                    self.hud_obj:HideChoice()
+                end
+            -- front right seat
+            elseif index == 2 then
+                if local_angle < 0 then
                     if self.choice_variation ~= Def.ChoiceVariation.FrontRight then
                         self.hud_obj:ShowChoice(Def.ChoiceVariation.FrontRight)
                     end
                     self.choice_variation = Def.ChoiceVariation.FrontRight
+                else
+                    self.choice_variation = Def.ChoiceVariation.None
+                    self.hud_obj:HideChoice()
                 end
-            elseif index == 2 then
+            -- back seats
+            elseif index == 3 then
                 if math.abs(local_angle) < self.choice_both_angle_small_max or math.abs(local_angle) > self.choice_both_angle_large_min then
                     if self.choice_variation ~= Def.ChoiceVariation.BackBoth then
                         self.hud_obj:ShowChoice(Def.ChoiceVariation.BackBoth)

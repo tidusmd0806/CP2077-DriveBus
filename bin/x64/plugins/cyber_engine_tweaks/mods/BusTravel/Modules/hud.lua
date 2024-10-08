@@ -12,7 +12,7 @@ function HUD:New()
     obj.seat_front_left_choice_contents = {icon = "ChoiceCaptionParts.SitIcon", text_1 = "LocKey#522", text_2 = "LocKey#40664"}
     obj.seat_front_right_choice_contents = {icon = "ChoiceCaptionParts.CourierIcon", text_1 = "LocKey#84764", text_2 = "LocKey#40665"}
     obj.seat_back_left_contents = {icon = "ChoiceCaptionParts.SitIcon", text_1 = "LocKey#522", text_2 = "LocKey#40664"}
-    obj.seat_back_right_contents = {icon = "ChoiceCaptionParts.CourierIcon", text_1 = "LocKey#84764", text_2 = "LocKey#40665"}
+    obj.seat_back_right_contents = {icon = "ChoiceCaptionParts.SitIcon", text_1 = "LocKey#522", text_2 = "LocKey#40665"}
     -- dynamic --
     obj.show_stand_hint_event = nil
     obj.hide_stand_hint_event = nil
@@ -92,6 +92,9 @@ end
 
 function HUD:ShowChoice(variation)
 
+    if variation == Def.ChoiceVariation.None then
+        return
+    end
     self:SetChoice(variation)
 
     if self.choice_num <= self.selected_choice_index then
@@ -114,7 +117,7 @@ end
 function HUD:HideChoice()
 
     self.interaction_hub = nil
-    self.choice_num = 0
+    self.choice_num = 1
 
     local ui_interaction_define = GetAllBlackboardDefs().UIInteractions;
     local interaction_blackboard = Game.GetBlackboardSystem():Get(ui_interaction_define)

@@ -21,7 +21,8 @@ function Core:New()
     obj.is_running_auto_drive = false
     -- npc
     obj.npc_id_list = {}
-    obj.npc_tweak_id_list = {}
+    obj.npc_default_tweak_id_list = {}
+    obj.npc_main_tweak_id_list = {}
     -- user setting table
     obj.initial_user_setting_table = {}
     -- language table
@@ -50,8 +51,6 @@ function Core:Init()
     self.event_obj = Event:New()
     self.event_obj:Init(self.bus_obj)
 
-    self:LoadNPCTweakID()
-
     self:SetObserve()
     self:SetOverride()
 
@@ -73,6 +72,7 @@ function Core:SetObserve()
     end)
 
     local exception_in_choice_list = Utils:ReadJson("Data/exception_in_choice.json")
+    local exception_in_mount_list = Utils:ReadJson("Data/exception_in_mount.json")
     Observe("PlayerPuppet", "OnAction", function(this, action, consumer)
         local action_name = action:GetName(action).value
 		local action_type = action:GetType(action).value
@@ -80,7 +80,8 @@ function Core:SetObserve()
 
         self.log_obj:Record(LogLevel.Debug, "Action Name: " .. action_name .. " Type: " .. action_type .. " Value: " .. action_value)
 
-        if self.event_obj:GetStatus() == Def.VehicleStatus.PlayerIn and self.event_obj:IsInFrontOfSeat() then
+        local veh_status = self.event_obj:GetStatus()
+        if veh_status == Def.VehicleStatus.PlayerIn and self.event_obj:IsInFrontOfSeat() then
             for _, exception in pairs(exception_in_choice_list) do
                 if action_name == exception then
                     consumer:Consume()
@@ -88,6 +89,14 @@ function Core:SetObserve()
                 end
             end
             self:ChoiceAction(action_name, action_type, action_value)
+        end
+        if veh_status == Def.VehicleStatus.Mounted then
+            for _, exception in pairs(exception_in_mount_list) do
+                if action_name == exception then
+                    consumer:Consume()
+                    break
+                end
+            end
         end
     end)
 
@@ -105,6 +114,12 @@ function Core:SetObserve()
                 if self:IsAutoDrive() then
                     self:StopAutoDrive()
                 end
+                Cron.After(0.8, function()
+                    GameObjectEffectHelper.StartEffectEvent(Game.GetPlayer(), "eyes_closed_loop", true, worldEffectBlackboard.new())
+                    Cron.After(1.5, function()
+                        GameObjectEffectHelper.StopEffectEvent(Game.GetPlayer(), "eyes_closed_loop")
+                    end)
+                end)
             end
         end
     end)
@@ -145,6 +160,29 @@ function Core:SetOverride()
         else
             return wrapped_method(this, isPlayer, mountedObject, checkSpecificDirection)
         end
+    end)
+
+    Override("VehicleObject", "CanStartPanicDriving", function(this, wrapped_method)
+        local veh_id = this:GetTDBID()
+        if veh_id == TweakDBID.new(BTM.bus_record) then
+            return false
+        else
+            return wrapped_method()
+        end
+    end)
+
+    Override("ExitFromVehicle", "Activate", function(this, context, wrapped_method)
+        local puppet = context:GetOwner()
+        local puppet_id = puppet:GetEntityID()
+        local tag_entity_list = Game.GetDynamicEntitySystem():GetTaggedIDs("BusNPC")
+        if #tag_entity_list ~= 0 then
+            for _, entity_id in ipairs(tag_entity_list) do
+                if entity_id.hash == puppet_id.hash then
+                    return
+                end
+            end
+        end
+        wrapped_method(context)
     end)
 
 end
@@ -235,7 +273,8 @@ function Core:LoadSetting()
 end
 
 function Core:LoadNPCTweakID()
-    self.npc_tweak_id_list = Utils:ReadJson("Data/npc_default.json")
+    self.npc_default_tweak_id_list = Utils:ReadJson("Data/npc_default.json")
+    self.npc_main_tweak_id_list = Utils:ReadJson("Data/npc_main.json")
 end
 
 function Core:IsAutoDrive()
@@ -285,37 +324,34 @@ function Core:ChoiceSelect(command)
         local choice_vari = self.event_obj:GetChoiceVariation()
         if choice_vari == Def.ChoiceVariation.FrontBoth then
             if self.event_obj.hud_obj.selected_choice_index == 0 then
-                self.bus_obj:MountPlayer("seat_front_right")
+                self.bus_obj:MountPlayer(self.bus_obj.player_seat_name_list["front_left"])
             elseif self.event_obj.hud_obj.selected_choice_index == 1 then
-                self.bus_obj:MountPlayer("seat_front_left")
+                self.bus_obj:MountPlayer(self.bus_obj.player_seat_name_list["front_right"])
             end
         elseif choice_vari == Def.ChoiceVariation.FrontLeft then
-            self.bus_obj:MountPlayer("seat_front_right")
+            self.bus_obj:MountPlayer(self.bus_obj.player_seat_name_list["front_left"])
         elseif choice_vari == Def.ChoiceVariation.FrontRight then
-            self.bus_obj:MountPlayer("seat_front_left")
+            self.bus_obj:MountPlayer(self.bus_obj.player_seat_name_list["front_right"])
         elseif choice_vari == Def.ChoiceVariation.BackBoth then
             if self.event_obj.hud_obj.selected_choice_index == 0 then
-                self.bus_obj:MountPlayer("seat_back_left")
+                self.bus_obj:MountPlayer(self.bus_obj.player_seat_name_list["back_left"])
             elseif self.event_obj.hud_obj.selected_choice_index == 1 then
-                self.bus_obj:MountPlayer("seat_back_right")
+                self.bus_obj:MountPlayer(self.bus_obj.player_seat_name_list["back_right"])
             end
         elseif choice_vari == Def.ChoiceVariation.BackLeft then
-            self.bus_obj:MountPlayer("seat_back_left")
+            self.bus_obj:MountPlayer(self.bus_obj.player_seat_name_list["back_left"])
         elseif choice_vari == Def.ChoiceVariation.BackRight then
-            self.bus_obj:MountPlayer("seat_back_right")
+            self.bus_obj:MountPlayer(self.bus_obj.player_seat_name_list["back_right"])
         end
     elseif command > 0 then
-        if self.event_obj.hud_obj.selected_choice_index < choice_num - 1 then
-            self.event_obj.hud_obj.selected_choice_index = self.event_obj.hud_obj.selected_choice_index + 1
-        else
-            self.event_obj.hud_obj.selected_choice_index = 0
-        end
+        self.event_obj.hud_obj.selected_choice_index = self.event_obj.hud_obj.selected_choice_index + 1
     elseif command < 0 then
-        if self.event_obj.hud_obj.selected_choice_index > 0 then
-            self.event_obj.hud_obj.selected_choice_index = self.event_obj.hud_obj.selected_choice_index - 1
-        else
-            self.event_obj.hud_obj.selected_choice_index = choice_num - 1
-        end
+        self.event_obj.hud_obj.selected_choice_index = self.event_obj.hud_obj.selected_choice_index - 1
+    end
+    if self.event_obj.hud_obj.selected_choice_index < 0 then
+        self.event_obj.hud_obj.selected_choice_index = choice_num - 1
+    elseif self.event_obj.hud_obj.selected_choice_index >= choice_num then
+        self.event_obj.hud_obj.selected_choice_index = 0
     end
 
     self.event_obj.hud_obj:ShowChoice(self.event_obj:GetChoiceVariation())
@@ -382,14 +418,29 @@ function Core:CreateNPC(npc_id)
         return
     end
 
-    local npc_tweak_id_num = #self.npc_tweak_id_list
+    local random_value = math.random(1, 100)
+    local main_character_spawn_rate = 50
+
+    local npc_tweak_id_num = #self.npc_default_tweak_id_list
     local random_index = math.random(1, npc_tweak_id_num)
+    local npc_record_id = self.npc_default_tweak_id_list[random_index]
+    local npc_main_tweak_id_info = {id = npc_record_id, appearance = {"random"}}
+
+    if random_value <= main_character_spawn_rate and #self.npc_main_tweak_id_list ~= 0 then
+        local npc_tweak_id_num = #self.npc_main_tweak_id_list
+        local random_index = math.random(1, npc_tweak_id_num)
+        npc_main_tweak_id_info = self.npc_main_tweak_id_list[random_index]
+        table.remove(self.npc_main_tweak_id_list, random_index)
+    end
+
+    self.log_obj:Record(LogLevel.Trace, "Spawn NPC: " .. npc_record_id .. "/ id: " .. npc_id)
 
     local npc_spec = DynamicEntitySpec.new()
     local pos = self.bus_obj:GetEntity():GetWorldPosition()
     pos.z = pos.z + 0.5
-    npc_spec.recordID = self.npc_tweak_id_list[random_index]
-    npc_spec.appearanceName = "random"
+    npc_spec.recordID = npc_main_tweak_id_info.id
+    local random_value_for_app = math.random(1, #npc_main_tweak_id_info.appearance)
+    npc_spec.appearanceName = npc_main_tweak_id_info.appearance[random_value_for_app]
     npc_spec.position = pos
     npc_spec.persistState = true
     npc_spec.persistSpawn = true
@@ -399,6 +450,8 @@ function Core:CreateNPC(npc_id)
 end
 
 function Core:SetNPC()
+
+    self:LoadNPCTweakID()
 
     self:UnsetNPC()
     local total_npc_num = 12
@@ -437,7 +490,7 @@ end
 function Core:UnsetNPC()
 
     local tag_entity_list = Game.GetDynamicEntitySystem():GetTaggedIDs("BusNPC")
-    if tag_entity_list == nil then
+    if #tag_entity_list == 0 then
         return
     end
     for _, entity_id in ipairs(tag_entity_list) do

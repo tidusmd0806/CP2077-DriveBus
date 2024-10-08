@@ -7,6 +7,7 @@ function Bus:New()
     obj.log_obj = Log:New()
     obj.log_obj:SetLevel(LogLevel.Info, "Bus")
     -- static --
+    obj.player_seat_name_list = {front_left = "seat_front_right", front_right = "seat_front_left", back_left = "seat_back_left", back_right = "seat_back_right"}
     obj.npc_seat_name_list = {"seat_back_left_a", "seat_back_left_b", "seat_back_left_c", "seat_back_left_d",
                           "seat_back_left_e", "seat_back_left_f", "seat_back_left_g", "seat_back_right_a",
                           "seat_back_right_b", "seat_front_right_a", "seat_front_right_b", "seat_front_right_c"}

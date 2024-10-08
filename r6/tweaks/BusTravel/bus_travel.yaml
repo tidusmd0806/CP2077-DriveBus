@@ -8,8 +8,8 @@ Vehicle.cs_savable_mahir_mt28_coach_btm:
 
 Vehicle.cs_savable_mahir_mt28_coach_btm.dealerAtlasPath: "base/gameplay/gui/common/icons/codex/assets_fullscreen25.inkatlas"
 Vehicle.cs_savable_mahir_mt28_coach_btm.dealerPartName: "v_mahir_mt28_coach_full"
-Vehicle.cs_savable_mahir_mt28_coach_btm.dealerPrice: 100000
-Vehicle.cs_savable_mahir_mt28_coach_btm.dealerCred: 20
+Vehicle.cs_savable_mahir_mt28_coach_btm.dealerPrice: 280000
+Vehicle.cs_savable_mahir_mt28_coach_btm.dealerCred: 28
 
 # Append the new vehicles to the list
 Vehicle.vehicle_list.list:
