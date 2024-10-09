@@ -99,8 +99,17 @@ function UI:CreateNativeSettingsPage()
 	end)
 	table.insert(self.option_table_list, option_table)
 
-	option_table = BTM.NativeSettings.addRangeInt("/BTM/general", BTM.core_obj:GetTranslationText("native_settings_general_ride_npc_num"), BTM.core_obj:GetTranslationText("native_settings_general_ride_npc_num_description"), -1, 12, 1, BTM.user_setting_table.ride_npc_num, 12, function(value)
+	option_table = BTM.NativeSettings.addRangeInt("/BTM/general", BTM.core_obj:GetTranslationText("native_settings_general_ride_npc_num"), BTM.core_obj:GetTranslationText("native_settings_general_ride_npc_num_description"), -1, 12, 1, BTM.user_setting_table.ride_npc_num, -1, function(value)
 		BTM.user_setting_table.ride_npc_num = value
+		Utils:WriteJson(BTM.user_setting_path, BTM.user_setting_table)
+		Cron.After(self.delay_updating_native_settings, function()
+			self:UpdateNativeSettingsPage()
+		end)
+	end)
+	table.insert(self.option_table_list, option_table)
+
+	option_table = BTM.NativeSettings.addRangeInt("/BTM/general", BTM.core_obj:GetTranslationText("native_settings_general_ride_special_npc_rate"), BTM.core_obj:GetTranslationText("native_settings_general_ride_special_npc_rate_description"), 0, 100, 1, BTM.user_setting_table.ride_special_npc_rate, 5, function(value)
+		BTM.user_setting_table.ride_special_npc_rate = value
 		Utils:WriteJson(BTM.user_setting_path, BTM.user_setting_table)
 		Cron.After(self.delay_updating_native_settings, function()
 			self:UpdateNativeSettingsPage()

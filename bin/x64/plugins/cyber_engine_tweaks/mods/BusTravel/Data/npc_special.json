@@ -1,0 +1,102 @@
+[
+    {
+        "id":"Character.Judy",
+        "appearance":["judy_default"]
+    },
+    {   
+        "id":"Character.Panam",
+        "appearance":["panam_default", "panam_no_jacket", "panam__mq055__apartment_01"]
+    },
+    {
+        "id":"Character.Rogue",
+        "appearance":["rogue_rogue_old", "rogue_rogue_date"]
+    },
+    {
+        "id":"Character.Takemura",
+        "appearance":["goro_takemura_ronin_shirt", "goro_takemura_saburo_bodyguard", "goro_takemura_ronin_trench", "goro_takemura_finale_white"]
+    },
+    {
+        "id":"Character.Sobchak",
+        "appearance":["river_ward_default", "river_ward_no_jacket", "river_ward_jail_overalls"]
+    },
+    {
+        "id":"Character.Victor_Vector",
+        "appearance":["victor_vektor_default", "victor_vektor_jackies_funeral"]
+    },
+    {
+        "id": "Character.Lizzy_Wizzy",
+        "appearance": ["celebrity_chrome_default"]
+    },
+    {
+        "id": "Character.Elizabeth_Peralez",
+        "appearance": ["elizabeth_peralez_default", "elizabeth_peralez_incognito"]
+    },
+    {
+        "id": "Character.Jefferson_Peralez",
+        "appearance": ["jefferson_peralez_default"]
+    },
+    {
+        "id": "Character.Misty",
+        "appearance": ["misty_default"]
+    },
+    {
+        "id": "Character.q203_mr_x",
+        "appearance": ["corporat_ma__q003_gman"]
+    },
+    {
+        "id": "Character.Saul",
+        "appearance": ["saul_default"]
+    },
+    {
+        "id": "Character.Kerry",
+        "appearance": ["kerry_eurodyne_kerry_eurodyne_old", "man_average_sq017_kerr_old_disguise"]
+    },
+    {
+        "id": "Character.Denny",
+        "appearance": ["denny_denny"]
+    },
+    {
+        "id": "Character.Henry",
+        "appearance": ["henry_2070_drug_addict", "henry_2070_rockerboy"]
+    },
+    {
+        "id": "Character.Nancy",
+        "appearance": ["nancy_default", "nancy_nancy_2077_rockergirl", "nancy_camera_device"]
+    },
+    {
+        "id": "Character.Claire",
+        "appearance": ["clair_default", "clair_bartender"]
+    },
+    {
+        "id": "Character.q005_hideyoshi_oshima",
+        "appearance": ["citizen__rich_ma__q104__hideo"]
+    },
+    {
+        "id": "Character.Stout",
+        "appearance": ["meredith_stout_default"]
+    },
+    {
+        "id": "Character.Padre",
+        "appearance": ["sebastian_perez_default"]
+    },
+    {
+        "id": "Character.wakako_okada",
+        "appearance": ["wakako_okada_default"]
+    },
+    {
+        "id": "Character.dakota_smith",
+        "appearance": ["dakota_smith_default"]
+    },
+    {
+        "id": "Character.dyno",
+        "appearance": ["dino_default"]
+    },
+    {
+        "id": "Character.muamar_reyes",
+        "appearance": ["capitan_reyes_default"]
+    },
+    {
+        "id": "Character.reggie",
+        "appearance": ["service__fixer_wa__regina_jones"]
+    }
+]

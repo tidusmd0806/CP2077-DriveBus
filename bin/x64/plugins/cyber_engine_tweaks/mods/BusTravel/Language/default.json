@@ -8,6 +8,8 @@
     "native_settings_general_language_description": "Select the language.",
     "native_settings_general_ride_npc_num": "NPC Ride Number",
     "native_settings_general_ride_npc_num_description": "Set the number of NPCs riding the bus. -1 is random.",
+    "native_settings_general_ride_special_npc_rate": "Unique NPC Appearance Rate",
+    "native_settings_general_ride_special_npc_rate_description": "Set the probability that a unique NPC will ride instead of a normal NPC. 0 will not appear.",
     "native_settings_general_activation": "Manually Unlock Bus",
     "native_settings_general_activation_description": "Add an item to enable and disable the bus without a virtual car dealer.",
     "native_settings_activation_subtitle": "Unlock The Bus",

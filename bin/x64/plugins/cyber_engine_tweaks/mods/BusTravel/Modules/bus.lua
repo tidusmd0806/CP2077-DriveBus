@@ -11,6 +11,7 @@ function Bus:New()
     obj.npc_seat_name_list = {"seat_back_left_a", "seat_back_left_b", "seat_back_left_c", "seat_back_left_d",
                           "seat_back_left_e", "seat_back_left_f", "seat_back_left_g", "seat_back_right_a",
                           "seat_back_right_b", "seat_front_right_a", "seat_front_right_b", "seat_front_right_c"}
+    obj.auto_drive_stop_blake_time = 2
     -- dynamic --
     obj.entity = nil
     obj.player_seat = "None"
@@ -203,13 +204,13 @@ function Bus:StopAutoDrive()
     cmd.targetPosition = Vector4.Vector4To3(player_pos)
     cmd.driveDownTheRoadIndefinitely = false
     cmd.clearTrafficOnPath = true
-    cmd.minimumDistanceToTarget = 0
+    cmd.minimumDistanceToTarget = 10
     cmd.maxSpeed = 5
     cmd.minSpeed = 1
     evt.command = cmd
 
     self.entity:QueueEvent(evt)
-    self.entity:ForceBrakesUntilStoppedOrFor(3)
+    self.entity:ForceBrakesUntilStoppedOrFor(self.auto_drive_stop_blake_time)
 
     self:SoundHorn(0.5)
 

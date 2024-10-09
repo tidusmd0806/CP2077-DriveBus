@@ -1,1 +1,1 @@
-{"keybind_table":[{"key":"IK_G","name":"auto_drive","pad":"IK_Pad_X_SQUARE","is_hold":false}],"language_index":1,"ride_npc_num":12,"version":"1.0.0"}
+{"ride_special_npc_rate":5,"ride_npc_num":-1,"language_index":1,"version":"1.0.0","keybind_table":[{"is_hold":false,"name":"auto_drive","pad":"IK_Pad_X_SQUARE","key":"IK_G"}]}

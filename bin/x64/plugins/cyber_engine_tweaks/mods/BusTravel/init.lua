@@ -51,7 +51,8 @@ BTM.user_setting_table = {
     version = BTM.version,
     -- general
     language_index = 1,
-    ride_npc_num = 12,
+    ride_npc_num = -1,
+    ride_special_npc_rate = 5,
     -- keybind
     keybind_table = BTM.default_keybind_table,
 }

@@ -22,7 +22,7 @@ function Core:New()
     -- npc
     obj.npc_id_list = {}
     obj.npc_default_tweak_id_list = {}
-    obj.npc_main_tweak_id_list = {}
+    obj.npc_special_tweak_id_list = {}
     -- user setting table
     obj.initial_user_setting_table = {}
     -- language table
@@ -162,9 +162,20 @@ function Core:SetOverride()
         end
     end)
 
-    Override("VehicleObject", "CanStartPanicDriving", function(this, wrapped_method)
+    -- Override("VehicleObject", "CanStartPanicDriving", function(this, wrapped_method)
+    --     local veh_id = this:GetTDBID()
+    --     if veh_id == TweakDBID.new(BTM.bus_record) then
+    --         self.log_obj:Record(LogLevel.Trace, "Panic Driving is disabled.")
+    --         return false
+    --     else
+    --         return wrapped_method()
+    --     end
+    -- end)
+
+    Override("VehicleObject", "TriggerDrivingPanicBehavior", function(this, threatPosition, wrapped_method)
         local veh_id = this:GetTDBID()
         if veh_id == TweakDBID.new(BTM.bus_record) then
+            self.log_obj:Record(LogLevel.Trace, "Panic Driving is disabled.")
             return false
         else
             return wrapped_method()
@@ -274,7 +285,7 @@ end
 
 function Core:LoadNPCTweakID()
     self.npc_default_tweak_id_list = Utils:ReadJson("Data/npc_default.json")
-    self.npc_main_tweak_id_list = Utils:ReadJson("Data/npc_main.json")
+    self.npc_special_tweak_id_list = Utils:ReadJson("Data/npc_special.json")
 end
 
 function Core:IsAutoDrive()
@@ -419,18 +430,18 @@ function Core:CreateNPC(npc_id)
     end
 
     local random_value = math.random(1, 100)
-    local main_character_spawn_rate = 50
+    local main_character_spawn_rate = BTM.user_setting_table.ride_special_npc_rate
 
     local npc_tweak_id_num = #self.npc_default_tweak_id_list
     local random_index = math.random(1, npc_tweak_id_num)
     local npc_record_id = self.npc_default_tweak_id_list[random_index]
-    local npc_main_tweak_id_info = {id = npc_record_id, appearance = {"random"}}
+    local npc_special_tweak_id_info = {id = npc_record_id, appearance = {"random"}}
 
-    if random_value <= main_character_spawn_rate and #self.npc_main_tweak_id_list ~= 0 then
-        local npc_tweak_id_num = #self.npc_main_tweak_id_list
+    if random_value <= main_character_spawn_rate and #self.npc_special_tweak_id_list ~= 0 then
+        local npc_tweak_id_num = #self.npc_special_tweak_id_list
         local random_index = math.random(1, npc_tweak_id_num)
-        npc_main_tweak_id_info = self.npc_main_tweak_id_list[random_index]
-        table.remove(self.npc_main_tweak_id_list, random_index)
+        npc_special_tweak_id_info = self.npc_special_tweak_id_list[random_index]
+        table.remove(self.npc_special_tweak_id_list, random_index)
     end
 
     self.log_obj:Record(LogLevel.Trace, "Spawn NPC: " .. npc_record_id .. "/ id: " .. npc_id)
@@ -438,9 +449,9 @@ function Core:CreateNPC(npc_id)
     local npc_spec = DynamicEntitySpec.new()
     local pos = self.bus_obj:GetEntity():GetWorldPosition()
     pos.z = pos.z + 0.5
-    npc_spec.recordID = npc_main_tweak_id_info.id
-    local random_value_for_app = math.random(1, #npc_main_tweak_id_info.appearance)
-    npc_spec.appearanceName = npc_main_tweak_id_info.appearance[random_value_for_app]
+    npc_spec.recordID = npc_special_tweak_id_info.id
+    local random_value_for_app = math.random(1, #npc_special_tweak_id_info.appearance)
+    npc_spec.appearanceName = npc_special_tweak_id_info.appearance[random_value_for_app]
     npc_spec.position = pos
     npc_spec.persistState = true
     npc_spec.persistSpawn = true
