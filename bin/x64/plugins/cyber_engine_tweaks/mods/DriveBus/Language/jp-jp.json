@@ -2,7 +2,7 @@
     "language": "日本語",
     "version": "1.0.0",
 
-    "native_settings_top_title": "バス",
+    "native_settings_top_title": "Drive Bus",
     "native_settings_general_subtitle": "一般設定",
     "native_settings_general_language": "言語",
     "native_settings_general_language_description": "言語を選択してください。",
@@ -18,6 +18,8 @@
     "native_settings_keybinds_subtitle": "キー割り当て（キーボード）",
     "native_settings_controller_subtitle": "キー割り当て（コントローラー）",
     "native_settings_keybinds_auto_drive": "自動運転",
-    "native_settings_keybinds_auto_drive_description": "自動運転を開始します。もう一度押すと終了します。目的地は設定できません。街中を徘徊します。"
+    "native_settings_keybinds_auto_drive_description": "自動運転を開始します。もう一度押すと終了します。目的地は設定できません。街中を徘徊します。",
+    "native_settings_keybinds_window_toggle": "右後方席の窓を開閉",
+    "native_settings_keybinds_window_toggle_description": "右後方席の窓を開閉します。"
     
 }

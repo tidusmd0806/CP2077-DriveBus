@@ -33,4 +33,11 @@ Def.DoorEvent = {
     Close = 2,
 }
 
+Def.WindowEvent = {
+    Unknown = 0,
+    Open = 1,
+    Close = 2,
+    Change = 3,
+}
+
 return Def

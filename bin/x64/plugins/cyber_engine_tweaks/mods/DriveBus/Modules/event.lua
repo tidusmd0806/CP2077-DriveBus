@@ -33,8 +33,8 @@ end
 
 function Event:Init(bus_obj)
 
-    if BTM.is_ready then
-        self.log_obj:Record(LogLevel.Warning, "BTM is already prepared.")
+    if DAB.is_ready then
+        self.log_obj:Record(LogLevel.Warning, "DAB is already prepared.")
         return
     end
 
@@ -59,6 +59,7 @@ function Event:SetObserve()
 
     GameUI.Observe("SessionEnd", function()
         self.sound_obj:ToggleEnterExitSound(true)
+        self.bus_obj.entity = nil
     end)
 
     Observe("InteractionUIBase", "OnInitialize", function(this)
@@ -232,7 +233,7 @@ end
 function Event:CheckMountedBus()
 
     local mounted_vehicle = Game.GetPlayer():GetMountedVehicle()
-    if mounted_vehicle ~=nil and mounted_vehicle:GetTDBID() == TweakDBID.new(BTM.bus_record) then
+    if mounted_vehicle ~=nil and mounted_vehicle:GetTDBID() == TweakDBID.new(DAB.bus_record) then
         self:UpdateVehicleStatus(Def.VehicleStatus.Mounted)
         return true
     else

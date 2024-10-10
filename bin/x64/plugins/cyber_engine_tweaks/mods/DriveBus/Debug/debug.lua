@@ -20,8 +20,8 @@ end
 
 function Debug:ImGuiMain()
 
-    ImGui.Begin("BTM DEBUG WINDOW")
-    ImGui.Text("Version : " .. BTM.version)
+    ImGui.Begin("DAB DEBUG WINDOW")
+    ImGui.Text("Version : " .. DAB.version)
 
     self:SetObserver()
     self:SetLogLevel()
@@ -41,7 +41,17 @@ end
 function Debug:SetObserver()
 
     if not self.is_set_observer then
-        -- reserved        
+        -- reserved
+        Observe("VehicleComponent", "OnSummonFinishedEvent", function(this, evt)
+            -- method has just been called with:
+            -- this: VehicleComponent
+            -- evt: ref<SummonFinishedEvent>
+            if self.is_set_observer then
+                print("VehicleComponent.OnSummonFinishedEvent")
+                print(evt.state)
+            end
+        end)    
+
     end
     self.is_set_observer = true
 
@@ -82,7 +92,7 @@ end
 function Debug:ImGuiInputCheck()
     self.is_im_gui_input_check = ImGui.Checkbox("[ImGui] Input Check", self.is_im_gui_input_check)
     if self.is_im_gui_input_check then
-        if BTM.is_keyboard_input then
+        if DAB.is_keyboard_input then
             ImGui.Text("Keyboard : On")
         else
             ImGui.Text("Keyboard : Off")
@@ -103,15 +113,15 @@ function Debug:ImGuiPlayerPosition()
         local pitch = string.format("%.2f", angle.pitch)
         local yaw = string.format("%.2f", angle.yaw)
         ImGui.Text("[world]Roll:" .. roll .. ", Pitch:" .. pitch .. ", Yaw:" .. yaw)
-        if BTM.core_obj.bus_obj.entity == nil then
+        if DAB.core_obj.bus_obj.entity == nil then
             return
         end
-        local bus_local_pos = BTM.core_obj.bus_obj:GetPlayerLocalPosition()
+        local bus_local_pos = DAB.core_obj.bus_obj:GetPlayerLocalPosition()
         local local_x = string.format("%.2f", bus_local_pos.x)
         local local_y = string.format("%.2f", bus_local_pos.y)
         local local_z = string.format("%.2f", bus_local_pos.z)
         ImGui.Text("[local]X:" .. local_x .. ", Y:" .. local_y .. ", Z:" .. local_z)
-        local bus_angle = BTM.core_obj.bus_obj:GetPlayerLookAngle()
+        local bus_angle = DAB.core_obj.bus_obj:GetPlayerLookAngle()
         local bus_yaw = string.format("%.2f", bus_angle)
         ImGui.Text("[local]Yaw:" .. bus_yaw)
     end
@@ -120,12 +130,12 @@ end
 function Debug:ImGuiBusPosition()
     self.is_im_gui_bus_position = ImGui.Checkbox("[ImGui] Bus Position Angle", self.is_im_gui_bus_position)
     if self.is_im_gui_bus_position then
-        if BTM.core_obj.bus_obj.entity == nil then
+        if DAB.core_obj.bus_obj.entity == nil then
             ImGui.Text("Bus is not exist.")
             return
         end
-        local pos = BTM.core_obj.bus_obj.entity:GetWorldPosition()
-        local angle = BTM.core_obj.bus_obj.entity:GetWorldOrientation():ToEulerAngles()
+        local pos = DAB.core_obj.bus_obj.entity:GetWorldPosition()
+        local angle = DAB.core_obj.bus_obj.entity:GetWorldOrientation():ToEulerAngles()
         local x = string.format("%.2f", pos.x)
         local y = string.format("%.2f", pos.y)
         local z = string.format("%.2f", pos.z)
@@ -140,25 +150,26 @@ end
 function Debug:BusInfo()
     self.is_im_gui_bus_info = ImGui.Checkbox("[ImGui] Bus Info", self.is_im_gui_bus_info)
     if self.is_im_gui_bus_info then
-        if BTM.core_obj.bus_obj.entity == nil then
+        if DAB.core_obj.bus_obj.entity == nil then
             ImGui.Text("Bus is not exist.")
             return
         end
-        ImGui.Text("Current Status : " .. BTM.core_obj.event_obj:GetStatus())
-        local is_front = BTM.core_obj.event_obj:IsInFrontOfSeat()
+        ImGui.Text("Current Status : " .. DAB.core_obj.event_obj:GetStatus())
+        local is_front = DAB.core_obj.event_obj:IsInFrontOfSeat()
         if is_front then
             ImGui.Text("In front of seat")
         else
             ImGui.Text("Not in front of seat")
         end
-        local speed = string.format("%.2f", BTM.core_obj.bus_obj:GetSpeed())
+        local speed = string.format("%.2f", DAB.core_obj.bus_obj:GetSpeed())
         ImGui.Text("Speed : " .. speed)
-        local is_auto_drive = BTM.core_obj:IsAutoDrive()
+        local is_auto_drive = DAB.core_obj:IsAutoDrive()
         if is_auto_drive then
             ImGui.Text("Auto Drive : On")
         else
             ImGui.Text("Auto Drive : Off")
         end
+        ImGui.Text("Player Seat : " .. DAB.core_obj.bus_obj:GetPlayerSeat())
     end
 end
 
@@ -166,13 +177,13 @@ function Debug:ImGuiMeasurement()
     self.is_im_gui_measurement = ImGui.Checkbox("[ImGui] Measurement", self.is_im_gui_measurement)
     if self.is_im_gui_measurement then
         local look_at_pos = Game.GetTargetingSystem():GetLookAtPosition(Game.GetPlayer())
-        if BTM.core_obj.bus_obj.entity == nil then
+        if DAB.core_obj.bus_obj.entity == nil then
             return
         end
-        local origin = BTM.core_obj.bus_obj.entity:GetWorldPosition()
-        local right = BTM.core_obj.bus_obj.entity:GetWorldRight()
-        local forward = BTM.core_obj.bus_obj.entity:GetWorldForward()
-        local up = BTM.core_obj.bus_obj.entity:GetWorldUp()
+        local origin = DAB.core_obj.bus_obj.entity:GetWorldPosition()
+        local right = DAB.core_obj.bus_obj.entity:GetWorldRight()
+        local forward = DAB.core_obj.bus_obj.entity:GetWorldForward()
+        local up = DAB.core_obj.bus_obj.entity:GetWorldUp()
         local relative = Vector4.new(look_at_pos.x - origin.x, look_at_pos.y - origin.y, look_at_pos.z - origin.z, 1)
         local x = Vector4.Dot(relative, right)
         local y = Vector4.Dot(relative, forward)
@@ -186,15 +197,21 @@ end
 
 function Debug:ImGuiExcuteFunction()
     if ImGui.Button("TF1") then
-        BTM.core_obj.bus_obj:ControlDoor(Def.DoorEvent.Open)
+        DAB.core_obj.bus_obj:ControlDoor(Def.DoorEvent.Open)
         print("Excute Test Function 1")
     end
     ImGui.SameLine()
     if ImGui.Button("TF2") then
+        DAB.core_obj.bus_obj:ControlWindow(Def.WindowEvent.Change)
         print("Excute Test Function 2")
     end
     ImGui.SameLine()
     if ImGui.Button("TF3") then
+        local evt = SummonFinishedEvent.new()
+        evt.state = vehicleSummonState.Arrived
+        DAB.core_obj.bus_obj.entity:QueueEvent(evt)
+        -- DAB.core_obj.bus_obj.entity:GetVehicleComponent():OnSummonFinishedEvent(evt)
+        Game.GetPlayer():QueueEvent(evt)
         print("Excute Test Function 3")
     end
 end

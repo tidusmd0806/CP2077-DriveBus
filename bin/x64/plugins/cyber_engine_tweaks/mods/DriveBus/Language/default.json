@@ -2,7 +2,7 @@
     "language": "English",
     "version": "1.0.0",
 
-    "native_settings_top_title": "Bus",
+    "native_settings_top_title": "Drive Bus",
     "native_settings_general_subtitle": "General Settings",
     "native_settings_general_language": "Language",
     "native_settings_general_language_description": "Select the language.",
@@ -18,5 +18,7 @@
     "native_settings_keybinds_subtitle": "Keybinds(Keyboard)",
     "native_settings_controller_subtitle": "Keybinds(Controller)",
     "native_settings_keybinds_auto_drive": "Auto Drive",
-    "native_settings_keybinds_auto_drive_description": "Start automatic driving. Press again to stop. You cannot set a destination. It will wander around the city."
+    "native_settings_keybinds_auto_drive_description": "Start automatic driving. Press again to stop. You cannot set a destination. It will wander around the city.",
+    "native_settings_keybinds_window_toggle": "Open/Close Right Rear Window",
+    "native_settings_keybinds_window_toggle_description": "Open and close the right rear window."
 }

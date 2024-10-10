@@ -35,13 +35,13 @@ end
 
 function Core:Init()
 
-    if BTM.is_ready then
-        self.log_obj:Record(LogLevel.Warning, "BTM is already prepared.")
+    if DAB.is_ready then
+        self.log_obj:Record(LogLevel.Warning, "DAB is already prepared.")
         return
     end
 
     -- set initial user setting
-    self.initial_user_setting_table = Utils:DeepCopy(BTM.user_setting_table)
+    self.initial_user_setting_table = Utils:DeepCopy(DAB.user_setting_table)
     self:LoadSetting()
     self:SetTranslationNameList()
     self:StoreTranslationtableList()
@@ -64,7 +64,7 @@ function Core:SetObserve()
     Observe("VehicleMinimapMappinComponent", "OnInitialize", function(this, minimapPOIMappinController, vehicleMappin)
         local vehicle = vehicleMappin:GetVehicle()
         local veh_id = vehicle:GetTDBID()
-        local bus_id = TweakDBID.new(BTM.bus_record)
+        local bus_id = TweakDBID.new(DAB.bus_record)
         if veh_id == bus_id then
             self.log_obj:Record(LogLevel.Info, "Bus vehicle detected.")
             self.bus_obj:SetEntity(vehicle)
@@ -101,7 +101,7 @@ function Core:SetObserve()
     end)
 
     Observe("WorkspotGameSystem", "UnmountFromVehicle", function(this, parent, child, instant, posDelta, orientDelta, exitSlotName)
-        if parent:GetTDBID() == TweakDBID.new(BTM.bus_record) then
+        if parent ~= nil and parent:GetTDBID() == TweakDBID.new(DAB.bus_record) then
             if child:IsPlayer() then
                 Cron.Every(0.5, {tick=1}, function(timer)
                     timer.tick = timer.tick + 1
@@ -116,8 +116,9 @@ function Core:SetObserve()
                 end
                 Cron.After(0.8, function()
                     GameObjectEffectHelper.StartEffectEvent(Game.GetPlayer(), "eyes_closed_loop", true, worldEffectBlackboard.new())
-                    Cron.After(1.5, function()
+                    Cron.After(0.8, function()
                         GameObjectEffectHelper.StopEffectEvent(Game.GetPlayer(), "eyes_closed_loop")
+                        GameObjectEffectHelper.StartEffectEvent(Game.GetPlayer(), "eyes_opening_05s", true, worldEffectBlackboard.new())
                     end)
                 end)
             end
@@ -126,7 +127,7 @@ function Core:SetObserve()
 
     Observe("VehicleSystem", "SpawnPlayerVehicle", function(this, vehicle_type)
         local record_id = this:GetActivePlayerVehicle(vehicle_type).recordID
-        local bus_record_id = TweakDBID.new(BTM.bus_record)
+        local bus_record_id = TweakDBID.new(DAB.bus_record)
         if record_id.hash == bus_record_id.hash then
             Cron.Every(0.1, {tick=1}, function(timer)
                 timer.tick = timer.tick + 1
@@ -162,19 +163,9 @@ function Core:SetOverride()
         end
     end)
 
-    -- Override("VehicleObject", "CanStartPanicDriving", function(this, wrapped_method)
-    --     local veh_id = this:GetTDBID()
-    --     if veh_id == TweakDBID.new(BTM.bus_record) then
-    --         self.log_obj:Record(LogLevel.Trace, "Panic Driving is disabled.")
-    --         return false
-    --     else
-    --         return wrapped_method()
-    --     end
-    -- end)
-
     Override("VehicleObject", "TriggerDrivingPanicBehavior", function(this, threatPosition, wrapped_method)
         local veh_id = this:GetTDBID()
-        if veh_id == TweakDBID.new(BTM.bus_record) then
+        if veh_id == TweakDBID.new(DAB.bus_record) then
             self.log_obj:Record(LogLevel.Trace, "Panic Driving is disabled.")
             return false
         else
@@ -203,7 +194,7 @@ function Core:SetTranslationNameList()
     self.language_file_list = {}
     self.language_name_list = {}
 
-    local files = dir(BTM.language_path)
+    local files = dir(DAB.language_path)
     local default_file
     local other_files = {}
 
@@ -216,7 +207,7 @@ function Core:SetTranslationNameList()
     end
 
     if default_file then
-        local default_language_table = Utils:ReadJson(BTM.language_path .. "/" .. default_file.name)
+        local default_language_table = Utils:ReadJson(DAB.language_path .. "/" .. default_file.name)
         if default_language_table and default_language_table.language then
             table.insert(self.language_file_list, default_file)
             table.insert(self.language_name_list, default_language_table.language)
@@ -227,7 +218,7 @@ function Core:SetTranslationNameList()
     end
 
     for _, file in ipairs(other_files) do
-        local language_table = Utils:ReadJson(BTM.language_path .. "/" .. file.name)
+        local language_table = Utils:ReadJson(DAB.language_path .. "/" .. file.name)
         if language_table and language_table.language then
             table.insert(self.language_file_list, file)
             table.insert(self.language_name_list, language_table.language)
@@ -240,7 +231,7 @@ function Core:StoreTranslationtableList()
 
     self.translation_table_list = {}
     for _, file in ipairs(self.language_file_list) do
-        local language_table = Utils:ReadJson(BTM.language_path .. "/" .. file.name)
+        local language_table = Utils:ReadJson(DAB.language_path .. "/" .. file.name)
         if language_table then
             table.insert(self.translation_table_list, language_table)
         end
@@ -254,7 +245,7 @@ function Core:GetTranslationText(text)
         self.log_obj:Record(LogLevel.Critical, "Language File is invalid")
         return nil
     end
-    local translated_text = self.translation_table_list[BTM.user_setting_table.language_index][text]
+    local translated_text = self.translation_table_list[DAB.user_setting_table.language_index][text]
     if translated_text == nil then
         self.log_obj:Record(LogLevel.Warning, "Translation is not found")
         translated_text = self.translation_table_list[1][text]
@@ -271,14 +262,14 @@ end
 
 function Core:LoadSetting()
 
-    local setting_data = Utils:ReadJson(BTM.user_setting_path)
+    local setting_data = Utils:ReadJson(DAB.user_setting_path)
     if setting_data == nil then
         self.log_obj:Record(LogLevel.Info, "Failed to load setting data. Restore default setting")
-        Utils:WriteJson(BTM.user_setting_path, BTM.user_setting_table)
+        Utils:WriteJson(DAB.user_setting_path, DAB.user_setting_table)
         return
     end
-    if setting_data.version == BTM.version then
-        BTM.user_setting_table = setting_data
+    if setting_data.version == DAB.version then
+        DAB.user_setting_table = setting_data
     end
 
 end
@@ -372,7 +363,7 @@ end
 function Core:ConvertPressButtonAction(key)
 
     local keybind_name = ""
-    for _, keybind in ipairs(BTM.user_setting_table.keybind_table) do
+    for _, keybind in ipairs(DAB.user_setting_table.keybind_table) do
         if key == keybind.key or key == keybind.pad then
             keybind_name = keybind.name
             self:ActionKeybind(keybind_name)
@@ -390,6 +381,8 @@ function Core:ActionKeybind(keybind_name)
         else
             self:RunAutoDrive()
         end
+    elseif keybind_name == "window_toggle" then
+        self.bus_obj:ControlWindow(Def.WindowEvent.Change)
     end
 
 end
@@ -430,7 +423,7 @@ function Core:CreateNPC(npc_id)
     end
 
     local random_value = math.random(1, 100)
-    local main_character_spawn_rate = BTM.user_setting_table.ride_special_npc_rate
+    local main_character_spawn_rate = DAB.user_setting_table.ride_special_npc_rate
 
     local npc_tweak_id_num = #self.npc_default_tweak_id_list
     local random_index = math.random(1, npc_tweak_id_num)
@@ -466,7 +459,7 @@ function Core:SetNPC()
 
     self:UnsetNPC()
     local total_npc_num = 12
-    local create_npc_num = BTM.user_setting_table.ride_npc_num
+    local create_npc_num = DAB.user_setting_table.ride_npc_num
     if create_npc_num < 0 then
         create_npc_num = math.random(0, total_npc_num)
     end

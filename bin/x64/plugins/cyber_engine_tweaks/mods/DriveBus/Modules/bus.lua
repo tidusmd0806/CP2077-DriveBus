@@ -93,7 +93,15 @@ function Bus:GetPlayerLookAngle()
 end
 
 function Bus:GetPlayerSeat()
+
+    if self.player_seat == "None" then
+        local seat = self.entity:GetSlotIdForMountedObject(Game.GetPlayer())
+        if seat ~= nil then
+            self.player_seat = seat.value
+        end
+    end
     return self.player_seat
+
 end
 
 function Bus:GetDoorState()
@@ -141,6 +149,37 @@ function Bus:ControlDoor(door_event)
     veh_door_event.slotID = CName.new("seat_front_right")
     veh_door_event.forceScene = false
     vehicle_ps:QueuePSEvent(vehicle_ps, veh_door_event)
+
+    return true
+
+end
+
+function Bus:ControlWindow(window_event)
+
+    if self.entity == nil then
+        self.log_obj:Record(LogLevel.Error, "ControlWindow: entity is nil.")
+        return false
+    end
+
+    local vehicle_ps = self.entity:GetVehiclePS()   
+    if window_event == Def.WindowEvent.Open then
+        self.log_obj:Record(LogLevel.Info, "ControlWindow: open all windows.")
+        vehicle_ps:OpenAllVehWindows()
+    elseif window_event == Def.WindowEvent.Close then
+        self.log_obj:Record(LogLevel.Info, "ControlWindow: close all windows.")
+        vehicle_ps:CloseAllVehWindows()
+    elseif window_event == Def.WindowEvent.Change then
+        if vehicle_ps:GetWindowState(EVehicleDoor.seat_front_right) == EVehicleWindowState.Closed then
+            self.log_obj:Record(LogLevel.Info, "ControlWindow: open all windows.")
+            vehicle_ps:OpenAllVehWindows()
+        else
+            self.log_obj:Record(LogLevel.Info, "ControlWindow: close all windows.")
+            vehicle_ps:CloseAllVehWindows()
+        end
+    else
+        self.log_obj:Record(LogLevel.Error, "ControlWindow: invalid window event.")
+        return false
+    end
 
     return true
 
