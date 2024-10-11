@@ -42,16 +42,6 @@ function Debug:SetObserver()
 
     if not self.is_set_observer then
         -- reserved
-        Observe("VehicleComponent", "OnSummonFinishedEvent", function(this, evt)
-            -- method has just been called with:
-            -- this: VehicleComponent
-            -- evt: ref<SummonFinishedEvent>
-            if self.is_set_observer then
-                print("VehicleComponent.OnSummonFinishedEvent")
-                print(evt.state)
-            end
-        end)    
-
     end
     self.is_set_observer = true
 
@@ -207,11 +197,18 @@ function Debug:ImGuiExcuteFunction()
     end
     ImGui.SameLine()
     if ImGui.Button("TF3") then
-        local evt = SummonFinishedEvent.new()
-        evt.state = vehicleSummonState.Arrived
+        local evt = AICommandEvent.new()
+        local cmd = AIVehicleDriveToPointAutonomousCommand.new()
+        local player_pos = Game.GetPlayer():GetWorldPosition()
+        cmd.targetPosition = Vector4.Vector4To3(player_pos)
+        cmd.driveDownTheRoadIndefinitely = false
+        cmd.clearTrafficOnPath = true
+        cmd.minimumDistanceToTarget = 10
+        cmd.maxSpeed = 5
+        cmd.minSpeed = 1
+        evt.command = cmd
+    
         DAB.core_obj.bus_obj.entity:QueueEvent(evt)
-        -- DAB.core_obj.bus_obj.entity:GetVehicleComponent():OnSummonFinishedEvent(evt)
-        Game.GetPlayer():QueueEvent(evt)
         print("Excute Test Function 3")
     end
 end

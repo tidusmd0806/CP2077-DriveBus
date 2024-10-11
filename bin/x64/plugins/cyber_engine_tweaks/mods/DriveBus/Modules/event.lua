@@ -232,7 +232,11 @@ end
 
 function Event:CheckMountedBus()
 
-    local mounted_vehicle = Game.GetPlayer():GetMountedVehicle()
+    local player = Game.GetPlayer()
+    if player == nil then
+        return false
+    end
+    local mounted_vehicle = player:GetMountedVehicle()
     if mounted_vehicle ~=nil and mounted_vehicle:GetTDBID() == TweakDBID.new(DAB.bus_record) then
         self:UpdateVehicleStatus(Def.VehicleStatus.Mounted)
         return true

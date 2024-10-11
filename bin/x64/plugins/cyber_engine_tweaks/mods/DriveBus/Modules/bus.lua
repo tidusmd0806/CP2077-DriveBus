@@ -230,10 +230,10 @@ function Bus:SendAutoDriveInTrafficEvent()
 
 end
 
-function Bus:StopAutoDrive()
+function Bus:SendAutoDriveToPlayerEvent()
 
     if self.entity == nil then
-        self.log_obj:Record(LogLevel.Error, "StopAutoDrive: entity is nil.")
+        self.log_obj:Record(LogLevel.Error, "SendAutoDriveToHereEvent: entity is nil.")
         return
     end
 
@@ -249,6 +249,39 @@ function Bus:StopAutoDrive()
     evt.command = cmd
 
     self.entity:QueueEvent(evt)
+
+end
+
+function Bus:SendAutoDriveToHereEvent()
+
+    if self.entity == nil then
+        self.log_obj:Record(LogLevel.Error, "SendAutoDriveToHereEvent: entity is nil.")
+        return
+    end
+
+    local evt = AICommandEvent.new()
+    local cmd = AIVehicleDriveToPointAutonomousCommand.new()
+    local player_pos = self.entity:GetWorldPosition()
+    cmd.targetPosition = Vector4.Vector4To3(player_pos)
+    cmd.driveDownTheRoadIndefinitely = false
+    cmd.clearTrafficOnPath = true
+    cmd.minimumDistanceToTarget = 10
+    cmd.maxSpeed = 5
+    cmd.minSpeed = 1
+    evt.command = cmd
+
+    self.entity:QueueEvent(evt)
+
+end
+
+function Bus:StopAutoDrive()
+
+    if self.entity == nil then
+        self.log_obj:Record(LogLevel.Error, "StopAutoDrive: entity is nil.")
+        return
+    end
+
+    self:SendAutoDriveToPlayerEvent()
     self.entity:ForceBrakesUntilStoppedOrFor(self.auto_drive_stop_blake_time)
 
     self:SoundHorn(0.5)

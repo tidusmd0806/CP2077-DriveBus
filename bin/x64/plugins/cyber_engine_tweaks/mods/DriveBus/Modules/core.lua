@@ -114,9 +114,13 @@ function Core:SetObserve()
                 if self:IsAutoDrive() then
                     self:StopAutoDrive()
                 end
-                Cron.After(0.8, function()
+                local blink_time = 0.8
+                if child:IsInCombat() and self.bus_obj.player_seat == "seat_front_left" then
+                    blink_time = 0.2
+                end
+                Cron.After(blink_time, function()
                     GameObjectEffectHelper.StartEffectEvent(Game.GetPlayer(), "eyes_closed_loop", true, worldEffectBlackboard.new())
-                    Cron.After(0.8, function()
+                    Cron.After(blink_time, function()
                         GameObjectEffectHelper.StopEffectEvent(Game.GetPlayer(), "eyes_closed_loop")
                         GameObjectEffectHelper.StartEffectEvent(Game.GetPlayer(), "eyes_opening_05s", true, worldEffectBlackboard.new())
                     end)
@@ -135,6 +139,18 @@ function Core:SetObserve()
                     self:SetNPC()
                     timer:Halt()
                 elseif timer.tick > 50 then
+                    timer:Halt()
+                end
+            end)
+            local is_coming = false
+            Cron.Every(0.1, {tick=1}, function(timer)
+                timer.tick = timer.tick + 1
+                if self.bus_obj:GetSpeed() == 0 and is_coming then
+                    self.bus_obj:SendAutoDriveToHereEvent()
+                    timer:Halt()
+                elseif  self.bus_obj:GetSpeed() > 0 and not is_coming then
+                    is_coming = true
+                elseif timer.tick > 100 then
                     timer:Halt()
                 end
             end)
