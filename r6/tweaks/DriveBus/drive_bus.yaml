@@ -1,0 +1,17 @@
+# MT28
+Vehicle.cs_savable_mahir_mt28_coach_dab:
+  $base: Vehicle.cs_savable_mahir_mt28_coach
+  entityTemplatePath: "base/dab/v_mahir_mt28_coach_basic_01_dab.ent"
+  icon:
+    atlasResourcePath: base/gameplay/gui/common/icons/weapon_manufacturers.inkatlas
+    atlasPartName: mahir
+
+Vehicle.cs_savable_mahir_mt28_coach_dab.dealerAtlasPath: "base/gameplay/gui/common/icons/codex/assets_fullscreen25.inkatlas"
+Vehicle.cs_savable_mahir_mt28_coach_dab.dealerPartName: "v_mahir_mt28_coach_full"
+Vehicle.cs_savable_mahir_mt28_coach_dab.dealerPrice: 280000
+Vehicle.cs_savable_mahir_mt28_coach_dab.dealerCred: 28
+
+# Append the new vehicles to the list
+Vehicle.vehicle_list.list:
+  - !append Vehicle.cs_savable_mahir_mt28_coach_dab
+

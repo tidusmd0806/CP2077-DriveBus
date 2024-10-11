@@ -1,0 +1,25 @@
+{
+    "language": "日本語",
+    "version": "1.0.0",
+
+    "native_settings_top_title": "Drive Bus",
+    "native_settings_general_subtitle": "一般設定",
+    "native_settings_general_language": "言語",
+    "native_settings_general_language_description": "言語を選択してください。",
+    "native_settings_general_ride_npc_num": "NPC乗車人数",
+    "native_settings_general_ride_npc_num_description": "NPCがバスに乗車する人数を設定します。-1でランダムになります。",
+    "native_settings_general_ride_special_npc_rate": "固有NPCの出現確率",
+    "native_settings_general_ride_special_npc_rate_description": "固有NPCが通常のNPCの代わりに乗車する確率を設定します。0で出現しなくなります。",
+    "native_settings_general_activation": "バスを手動でアンロックする",
+    "native_settings_general_activation_description": "バーチャルカーディーラーなしでバスを有効および無効にする項目を追加します。",
+    "native_settings_activation_subtitle": "飛行車両のロック解除",
+    "native_settings_activation_bus": "マーヒア MT28 COACH",
+    "native_settings_activation_bus_description": "マーヒア MT28 COACHを車両リストに追加します。",
+    "native_settings_keybinds_subtitle": "キー割り当て（キーボード）",
+    "native_settings_controller_subtitle": "キー割り当て（コントローラー）",
+    "native_settings_keybinds_auto_drive": "自動運転",
+    "native_settings_keybinds_auto_drive_description": "自動運転を開始します。もう一度押すと終了します。目的地は設定できません。街中を徘徊します。",
+    "native_settings_keybinds_window_toggle": "右後方席の窓を開閉",
+    "native_settings_keybinds_window_toggle_description": "右後方席の窓を開閉します。"
+    
+}

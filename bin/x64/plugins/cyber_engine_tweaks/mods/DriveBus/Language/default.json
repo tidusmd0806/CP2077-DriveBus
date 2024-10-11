@@ -1,0 +1,24 @@
+{
+    "language": "English",
+    "version": "1.0.0",
+
+    "native_settings_top_title": "Drive Bus",
+    "native_settings_general_subtitle": "General Settings",
+    "native_settings_general_language": "Language",
+    "native_settings_general_language_description": "Select the language.",
+    "native_settings_general_ride_npc_num": "NPC Ride Number",
+    "native_settings_general_ride_npc_num_description": "Set the number of NPCs riding the bus. -1 is random.",
+    "native_settings_general_ride_special_npc_rate": "Unique NPC Appearance Rate",
+    "native_settings_general_ride_special_npc_rate_description": "Set the probability that a unique NPC will ride instead of a normal NPC. 0 will not appear.",
+    "native_settings_general_activation": "Manually Unlock Bus",
+    "native_settings_general_activation_description": "Add an item to enable and disable the bus without a virtual car dealer.",
+    "native_settings_activation_subtitle": "Unlock The Bus",
+    "native_settings_activation_bus": "Mahir MT28 COACH",
+    "native_settings_activation_bus_description": "Unlock Mahir MT28 COACH in the vehicle list.",
+    "native_settings_keybinds_subtitle": "Keybinds(Keyboard)",
+    "native_settings_controller_subtitle": "Keybinds(Controller)",
+    "native_settings_keybinds_auto_drive": "Auto Drive",
+    "native_settings_keybinds_auto_drive_description": "Start automatic driving. Press again to stop. You cannot set a destination. It will wander around the city.",
+    "native_settings_keybinds_window_toggle": "Open/Close Right Rear Window",
+    "native_settings_keybinds_window_toggle_description": "Open and close the right rear window."
+}
