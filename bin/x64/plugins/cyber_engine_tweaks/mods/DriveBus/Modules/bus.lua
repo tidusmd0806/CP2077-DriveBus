@@ -332,4 +332,40 @@ function Bus:MountNPC(npc_entity, seat_id)
 
 end
 
+function Bus:UnmountNPC(npc_entity, seat_id)
+
+    if self.entity == nil then
+        self.log_obj:Record(LogLevel.Error, "MountNPC: entity is nil.")
+        return
+    elseif npc_entity == nil then
+        self.log_obj:Record(LogLevel.Error, "MountNPC: npc_entity is nil.")
+        return
+    end
+
+    local mount_data = MountEventData.new()
+    local mount_event_options = MountEventOptions.new()
+    mount_event_options.silentUnmount = false
+    mount_event_options.entityID = self.entity:GetEntityID()
+    mount_event_options.alive = true
+    mount_event_options.occupiedByNeutral = true
+
+    mount_data.mountParentEntityId = self.entity:GetEntityID()
+    mount_data.isInstant = true
+    mount_data.setEntityVisibleWhenMountFinish = true
+    mount_data.removePitchRollRotationOnDismount = false
+    mount_data.ignoreHLS = false
+    mount_data.mountEventOptions = mount_event_options
+    mount_data.slotName = self.npc_seat_name_list[seat_id]
+    local cmd = AIUnmountCommand.new()
+    cmd.mountData = mount_data
+    npc_entity:GetAIControllerComponent():SendCommand(cmd)
+
+    local teleport_cmd = AITeleportCommand.new()
+	teleport_cmd.position = Vector4.new(0, 0, 0, 1)
+	teleport_cmd.doNavTest = false
+
+	npc_entity:GetAIControllerComponent():SendCommand(teleport_cmd)
+
+end
+
 return Bus

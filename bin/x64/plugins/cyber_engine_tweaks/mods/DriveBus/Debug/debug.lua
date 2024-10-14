@@ -2,17 +2,19 @@ local Utils = require("Tools/utils.lua")
 local Debug = {}
 Debug.__index = Debug
 
-function Debug:New(core_obj)
+function Debug:New()
     local obj = {}
-    obj.core_obj = core_obj
 
     -- set parameters
     obj.is_set_observer = false
     obj.is_im_gui_rw_count = false
     obj.is_im_gui_input_check = false
     obj.is_im_gui_player_position = false
+    obj.is_im_gui_common_info = false
     obj.is_im_gui_bus_position = false
+    obj.is_im_gui_community_position = false
     obj.is_im_gui_bus_info = false
+    obj.is_im_gui_community_info = false
     obj.is_im_gui_measurement = false
 
     return setmetatable(obj, self)
@@ -28,9 +30,12 @@ function Debug:ImGuiMain()
     self:SelectPrintDebug()
     self:ImGuiShowRWCount()
     self:ImGuiInputCheck()
+    self:ImGuiCommonInfo()
     self:ImGuiPlayerPosition()
     self:ImGuiBusPosition()
+    self:ImGuiCommunityPosition()
     self:BusInfo()
+    self:CommunityInfo()
     self:ImGuiMeasurement()
     self:ImGuiExcuteFunction()
 
@@ -117,6 +122,18 @@ function Debug:ImGuiPlayerPosition()
     end
 end
 
+function Debug:ImGuiCommonInfo()
+    self.is_im_gui_common_info = ImGui.Checkbox("[ImGui] Common Info", self.is_im_gui_common_info)
+    if self.is_im_gui_common_info then
+        if DAB.core_obj.community_bus_obj == DAB.core_obj.available_bus_obj then
+            ImGui.Text("Community Bus is same as Available Bus.")
+            return
+        else
+            ImGui.Text("Community Bus is different from Available Bus.")
+        end
+    end
+end
+
 function Debug:ImGuiBusPosition()
     self.is_im_gui_bus_position = ImGui.Checkbox("[ImGui] Bus Position Angle", self.is_im_gui_bus_position)
     if self.is_im_gui_bus_position then
@@ -126,6 +143,26 @@ function Debug:ImGuiBusPosition()
         end
         local pos = DAB.core_obj.bus_obj.entity:GetWorldPosition()
         local angle = DAB.core_obj.bus_obj.entity:GetWorldOrientation():ToEulerAngles()
+        local x = string.format("%.2f", pos.x)
+        local y = string.format("%.2f", pos.y)
+        local z = string.format("%.2f", pos.z)
+        local roll = string.format("%.2f", angle.roll)
+        local pitch = string.format("%.2f", angle.pitch)
+        local yaw = string.format("%.2f", angle.yaw)
+        ImGui.Text("X: " .. x .. ", Y: " .. y .. ", Z: " .. z)
+        ImGui.Text("Roll:" .. roll .. ", Pitch:" .. pitch .. ", Yaw:" .. yaw)
+    end
+end
+
+function Debug:ImGuiCommunityPosition()
+    self.is_im_gui_community_position = ImGui.Checkbox("[ImGui] Community Position Angle", self.is_im_gui_community_position)
+    if self.is_im_gui_community_position then
+        if DAB.core_obj.community_bus_obj.entity == nil then
+            ImGui.Text("Bus is not exist.")
+            return
+        end
+        local pos = DAB.core_obj.community_bus_obj.entity:GetWorldPosition()
+        local angle = DAB.core_obj.community_bus_obj.entity:GetWorldOrientation():ToEulerAngles()
         local x = string.format("%.2f", pos.x)
         local y = string.format("%.2f", pos.y)
         local z = string.format("%.2f", pos.z)
@@ -163,6 +200,32 @@ function Debug:BusInfo()
     end
 end
 
+function Debug:CommunityInfo()
+    self.is_im_gui_community_info = ImGui.Checkbox("[ImGui] Community Info", self.is_im_gui_community_info)
+    if self.is_im_gui_community_info then
+        if DAB.core_obj.community_bus_obj.entity == nil then
+            ImGui.Text("Bus is not exist.")
+            return
+        end
+        ImGui.Text("Current Status : " .. DAB.core_obj.community_event_obj:GetStatus())
+        local is_front = DAB.core_obj.community_event_obj:IsInFrontOfSeat()
+        if is_front then
+            ImGui.Text("In front of seat")
+        else
+            ImGui.Text("Not in front of seat")
+        end
+        local speed = string.format("%.2f", DAB.core_obj.community_bus_obj:GetSpeed())
+        ImGui.Text("Speed : " .. speed)
+        local is_auto_drive = DAB.core_obj:IsAutoDrive()
+        if is_auto_drive then
+            ImGui.Text("Auto Drive : On")
+        else
+            ImGui.Text("Auto Drive : Off")
+        end
+        ImGui.Text("Player Seat : " .. DAB.core_obj.community_bus_obj:GetPlayerSeat())
+    end
+end
+
 function Debug:ImGuiMeasurement()
     self.is_im_gui_measurement = ImGui.Checkbox("[ImGui] Measurement", self.is_im_gui_measurement)
     if self.is_im_gui_measurement then
@@ -187,19 +250,24 @@ end
 
 function Debug:ImGuiExcuteFunction()
     if ImGui.Button("TF1") then
-        DAB.core_obj.bus_obj:ControlDoor(Def.DoorEvent.Open)
+        print(DAB.is_auto_drive_mod)
         print("Excute Test Function 1")
     end
     ImGui.SameLine()
     if ImGui.Button("TF2") then
-        DAB.core_obj.bus_obj:ControlWindow(Def.WindowEvent.Change)
+        local veh = DAB.core_obj.community_bus_obj.entity
+        local comp = veh:GetVehicleComponent()
+        local driver = VehicleComponent.GetDriverMounted(DAB.core_obj.community_bus_obj.entity:GetEntityID())
+        -- print(driver:IsDead())
+        -- Game.GetDynamicEntitySystem():DeleteEntity(driver:GetEntityID())
+        DAB.core_obj.community_bus_obj:UnmountNPC(driver, 1)
         print("Excute Test Function 2")
     end
     ImGui.SameLine()
     if ImGui.Button("TF3") then
         local evt = AICommandEvent.new()
         local cmd = AIVehicleDriveToPointAutonomousCommand.new()
-        local player_pos = Game.GetPlayer():GetWorldPosition()
+        local player_pos = DAB.core_obj.community_bus_obj.entity:GetWorldPosition()
         cmd.targetPosition = Vector4.Vector4To3(player_pos)
         cmd.driveDownTheRoadIndefinitely = false
         cmd.clearTrafficOnPath = true
@@ -207,8 +275,7 @@ function Debug:ImGuiExcuteFunction()
         cmd.maxSpeed = 5
         cmd.minSpeed = 1
         evt.command = cmd
-    
-        DAB.core_obj.bus_obj.entity:QueueEvent(evt)
+        DAB.core_obj.community_bus_obj.entity:QueueEvent(evt)
         print("Excute Test Function 3")
     end
 end
