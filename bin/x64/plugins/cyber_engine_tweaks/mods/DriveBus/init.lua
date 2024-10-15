@@ -81,7 +81,7 @@ registerForEvent("onHook", function()
                 elseif DAB.listening_keybind_widget and action == "IACT_Release" then -- Key was bound, by keyboard
                     DAB.listening_keybind_widget = nil
                 end
-                local current_status = DAB.core_obj.event_obj:GetStatus() or Def.VehicleStatus.NoExistance
+                local current_status = DAB.core_obj.available_event_obj:GetStatus() or Def.VehicleStatus.NoExistance
                 if current_status == Def.VehicleStatus.Mounted then
                     if action == "IACT_Press" then
                         DAB.core_obj:ConvertPressButtonAction(key)

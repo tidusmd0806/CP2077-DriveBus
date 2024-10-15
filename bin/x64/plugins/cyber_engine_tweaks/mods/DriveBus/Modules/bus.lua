@@ -245,7 +245,7 @@ function Bus:SendAutoDriveToPlayerEvent()
     cmd.clearTrafficOnPath = true
     cmd.minimumDistanceToTarget = 10
     cmd.maxSpeed = 5
-    cmd.minSpeed = 1
+    cmd.minSpeed = 0
     evt.command = cmd
 
     self.entity:QueueEvent(evt)
@@ -261,13 +261,13 @@ function Bus:SendAutoDriveToHereEvent()
 
     local evt = AICommandEvent.new()
     local cmd = AIVehicleDriveToPointAutonomousCommand.new()
-    local player_pos = self.entity:GetWorldPosition()
-    cmd.targetPosition = Vector4.Vector4To3(player_pos)
+    local veh_pos = self.entity:GetWorldPosition()
+    cmd.targetPosition = Vector4.Vector4To3(veh_pos)
     cmd.driveDownTheRoadIndefinitely = false
     cmd.clearTrafficOnPath = true
     cmd.minimumDistanceToTarget = 10
     cmd.maxSpeed = 5
-    cmd.minSpeed = 1
+    cmd.minSpeed = 0
     evt.command = cmd
 
     self.entity:QueueEvent(evt)

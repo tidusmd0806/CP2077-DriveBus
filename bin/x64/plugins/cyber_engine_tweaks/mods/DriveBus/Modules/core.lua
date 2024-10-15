@@ -468,6 +468,7 @@ function Core:RunAutoDrive()
 end
 
 function Core:StopAutoDrive()
+    self.log_obj:Record(LogLevel.Info, "Auto drive is stopped.")
     self.is_running_auto_drive = false
 end
 
@@ -497,14 +498,14 @@ function Core:CreateNPC(npc_id, is_persist)
 
     local npc_spec = DynamicEntitySpec.new()
     local pos = self.available_bus_obj:GetEntity():GetWorldPosition()
-    pos.z = pos.z + 0.5
+    pos.z = pos.z - 5.5
     npc_spec.recordID = npc_special_tweak_id_info.id
     local random_value_for_app = math.random(1, #npc_special_tweak_id_info.appearance)
     npc_spec.appearanceName = npc_special_tweak_id_info.appearance[random_value_for_app]
     npc_spec.position = pos
     npc_spec.persistState = is_persist
     npc_spec.persistSpawn = is_persist
-    npc_spec.alwaysSpawned = is_persist
+    npc_spec.alwaysSpawned = true
     if is_persist then
         npc_spec.tags = {"BusNPC_persist"}
     else
@@ -575,11 +576,11 @@ function Core:CheckCommunityBus()
         timer.tick = timer.tick + 1
         self:SetLookAtCommunityBus()
         if self.community_bus_obj:GetEntity() ~= nil then
-            self.available_bus_obj =  self.community_bus_obj
-            self.available_event_obj = self.community_event_obj
-        else
-            self.available_bus_obj = self.bus_obj
-            self.available_event_obj = self.event_obj
+            if self.community_bus_obj:GetDoorState() == Def.DoorEvent.Open and self.community_event_obj:GetStatus() < Def.VehicleStatus.Mounted then
+                self.community_bus_obj:GetEntity():ForceBrakesUntilStoppedOrFor(0.1)
+            elseif self.community_bus_obj:GetSpeed() == 0 and self.community_event_obj:GetStatus() < Def.VehicleStatus.PlayerIn then
+                self.community_bus_obj:SendAutoDriveInTrafficEvent()
+            end
         end
     end)
 
@@ -597,20 +598,24 @@ function Core:SetLookAtCommunityBus()
     local look_at_obj = Game.GetTargetingSystem():GetLookAtObject(player)
     if look_at_obj ~= nil and look_at_obj:GetCurrentAppearanceName().value == DAB.bus_appearance then
         local player_bus = self.bus_obj:GetEntity()
-        if player_bus ~= nil and player_bus:GetEntityID().hash ~= look_at_obj:GetEntityID().hash then
+        if player_bus ~= nil and player_bus:GetEntityID().hash ~= look_at_obj:GetEntityID().hash or player_bus == nil then
             self.community_bus_obj:SetEntity(look_at_obj)
+            self.available_bus_obj =  self.community_bus_obj
+            self.available_event_obj = self.community_event_obj
             local driver = VehicleComponent.GetDriverMounted(self.community_bus_obj:GetEntity():GetEntityID())
             if driver ~= nil then
                 self.community_bus_obj:UnmountNPC(driver, 1)
+                self:SetNPC(false)
             end
             return true
         else
+            self.available_bus_obj =  self.bus_obj
+            self.available_event_obj = self.event_obj
             return true
         end
     else
-        if self.community_bus_obj:GetEntity() ~= nil then
-            self.community_bus_obj:SetEntity(nil)
-        end
+        self.available_bus_obj =  self.bus_obj
+        self.available_event_obj = self.event_obj
         return false
     end
 

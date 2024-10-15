@@ -258,8 +258,6 @@ function Debug:ImGuiExcuteFunction()
         local veh = DAB.core_obj.community_bus_obj.entity
         local comp = veh:GetVehicleComponent()
         local driver = VehicleComponent.GetDriverMounted(DAB.core_obj.community_bus_obj.entity:GetEntityID())
-        -- print(driver:IsDead())
-        -- Game.GetDynamicEntitySystem():DeleteEntity(driver:GetEntityID())
         DAB.core_obj.community_bus_obj:UnmountNPC(driver, 1)
         print("Excute Test Function 2")
     end
@@ -267,7 +265,8 @@ function Debug:ImGuiExcuteFunction()
     if ImGui.Button("TF3") then
         local evt = AICommandEvent.new()
         local cmd = AIVehicleDriveToPointAutonomousCommand.new()
-        local player_pos = DAB.core_obj.community_bus_obj.entity:GetWorldPosition()
+        -- local player_pos = DAB.core_obj.community_bus_obj.entity:GetWorldPosition()
+        local player_pos = Game.GetPlayer():GetWorldPosition()
         cmd.targetPosition = Vector4.Vector4To3(player_pos)
         cmd.driveDownTheRoadIndefinitely = false
         cmd.clearTrafficOnPath = true
@@ -277,6 +276,16 @@ function Debug:ImGuiExcuteFunction()
         evt.command = cmd
         DAB.core_obj.community_bus_obj.entity:QueueEvent(evt)
         print("Excute Test Function 3")
+    end
+    ImGui.SameLine()
+    if ImGui.Button("TF4") then
+        DAB.core_obj.community_bus_obj:SendAutoDriveInTrafficEvent()
+        print("Excute Test Function 4")
+    end
+    ImGui.SameLine()
+    if ImGui.Button("TF5") then
+        DAB.core_obj.community_bus_obj:SendAutoDriveToHereEvent()
+        print("Excute Test Function 5")
     end
 end
 
