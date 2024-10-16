@@ -13,11 +13,11 @@ local Debug = require("Debug/debug.lua")
 
 DAB = {
 	description = "Drive Bus",
-	version = "1.0.1",
+	version = "1.1.0",
     -- system
     is_ready = false,
     time_resolution = 0.01,
-    is_debug_mode = true,
+    is_debug_mode = false,
     -- common
     user_setting_path = "Data/user_setting.json",
     language_path = "Language",

@@ -149,7 +149,7 @@ function Core:SetObserve()
             Cron.Every(0.1, {tick=1}, function(timer)
                 timer.tick = timer.tick + 1
                 if self.bus_obj:IsInWorld() then
-                    self:SetNPC(true)
+                    self:SetNPC(true, true)
                     timer:Halt()
                 elseif timer.tick > 50 then
                     timer:Halt()
@@ -514,11 +514,13 @@ function Core:CreateNPC(npc_id, is_persist)
     self.npc_id_list[npc_id] = Game.GetDynamicEntitySystem():CreateEntity(npc_spec)
 end
 
-function Core:SetNPC(is_persist)
+function Core:SetNPC(is_persist, is_unset)
 
     self:LoadNPCTweakID()
 
-    self:UnsetNPC(is_persist)
+    if is_unset then
+        self:UnsetNPC(is_persist)
+    end
     local total_npc_num = 12
     local create_npc_num = DAB.user_setting_table.ride_npc_num
     if create_npc_num < 0 then
@@ -605,7 +607,7 @@ function Core:SetLookAtCommunityBus()
             local driver = VehicleComponent.GetDriverMounted(self.community_bus_obj:GetEntity():GetEntityID())
             if driver ~= nil then
                 self.community_bus_obj:UnmountNPC(driver, 1)
-                self:SetNPC(false)
+                self:SetNPC(false, false)
             end
             return true
         else
