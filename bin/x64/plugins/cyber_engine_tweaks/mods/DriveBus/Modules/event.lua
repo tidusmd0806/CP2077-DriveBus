@@ -237,7 +237,7 @@ function Event:CheckMountedBus()
         return false
     end
     local mounted_vehicle = player:GetMountedVehicle()
-    if mounted_vehicle ~=nil and mounted_vehicle:GetTDBID() == TweakDBID.new(DAB.bus_record) then
+    if mounted_vehicle ~= nil and mounted_vehicle:GetCurrentAppearanceName().value == DAB.bus_appearance then
         self:UpdateVehicleStatus(Def.VehicleStatus.Mounted)
         return true
     else

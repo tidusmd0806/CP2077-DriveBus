@@ -13,7 +13,7 @@ local Debug = require("Debug/debug.lua")
 
 DAB = {
 	description = "Drive Bus",
-	version = "1.0.0",
+	version = "1.1.0",
     -- system
     is_ready = false,
     time_resolution = 0.01,
@@ -23,6 +23,7 @@ DAB = {
     language_path = "Language",
     -- vehicle record
     bus_record = "Vehicle.cs_savable_mahir_mt28_coach_dab",
+    bus_appearance = "mahir_mt28_basic_coach_01_dab",
     -- version check
     cet_required_version = 32.1, -- 1.32.1
     cet_recommended_version = 32.3, -- 1.32.3
@@ -44,7 +45,9 @@ DAB = {
     default_keybind_table = {
         {name = "auto_drive", key = "IK_Z", pad = "IK_Pad_X_SQUARE", is_hold = false},
         {name = "window_toggle", key = "IK_Y", pad = "IK_Pad_DigitLeft", is_hold = false},
-    }
+    },
+    -- other mods
+    is_auto_drive_mod = false,
 }
 
 -- initial settings
@@ -78,7 +81,7 @@ registerForEvent("onHook", function()
                 elseif DAB.listening_keybind_widget and action == "IACT_Release" then -- Key was bound, by keyboard
                     DAB.listening_keybind_widget = nil
                 end
-                local current_status = DAB.core_obj.event_obj:GetStatus() or Def.VehicleStatus.NoExistance
+                local current_status = DAB.core_obj.available_event_obj:GetStatus() or Def.VehicleStatus.NoExistance
                 if current_status == Def.VehicleStatus.Mounted then
                     if action == "IACT_Press" then
                         DAB.core_obj:ConvertPressButtonAction(key)
@@ -119,9 +122,10 @@ registerForEvent('onInit', function()
     end
 
     DAB:CheckNativeSettings()
+    DAB:CheckAutoDriveMod()
 
     DAB.core_obj = Core:New()
-    DAB.debug_obj = Debug:New(nil)
+    DAB.debug_obj = Debug:New()
 
     DAB.core_obj:Init()
 
@@ -185,6 +189,12 @@ function DAB:CheckNativeSettings()
     end
     DAB.is_valid_native_settings = true
 
+end
+
+function DAB:CheckAutoDriveMod()
+    if AutoDriveMod_AutoDriveComponent ~= nil then
+        DAB.is_auto_drive_mod = true
+    end
 end
 
 function DAB:Version()
