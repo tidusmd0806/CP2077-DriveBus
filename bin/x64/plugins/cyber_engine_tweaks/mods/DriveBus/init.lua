@@ -13,7 +13,7 @@ local Debug = require("Debug/debug.lua")
 
 DAB = {
 	description = "Drive Bus",
-	version = "1.1.0",
+	version = "1.1.1",
     -- system
     is_ready = false,
     time_resolution = 0.01,

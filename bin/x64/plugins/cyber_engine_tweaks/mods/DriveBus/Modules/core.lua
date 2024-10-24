@@ -200,7 +200,7 @@ function Core:SetOverride()
             self.log_obj:Record(LogLevel.Trace, "Panic Driving is disabled.")
             return false
         else
-            return wrapped_method()
+            return wrapped_method(threatPosition)
         end
     end)
 
@@ -218,9 +218,17 @@ function Core:SetOverride()
     Override("ExitFromVehicle", "Activate", function(this, context, wrapped_method)
         local puppet = context:GetOwner()
         local puppet_id = puppet:GetEntityID()
-        local tag_entity_list = Game.GetDynamicEntitySystem():GetTaggedIDs("BusNPC")
-        if #tag_entity_list ~= 0 then
-            for _, entity_id in ipairs(tag_entity_list) do
+        local tag_persist_entity_list = Game.GetDynamicEntitySystem():GetTaggedIDs("BusNPC_persist")
+        if #tag_persist_entity_list ~= 0 then
+            for _, entity_id in ipairs(tag_persist_entity_list) do
+                if entity_id.hash == puppet_id.hash then
+                    return
+                end
+            end
+        end
+        local tag_temp_entity_list = Game.GetDynamicEntitySystem():GetTaggedIDs("BusNPC_temp")
+        if #tag_temp_entity_list ~= 0 then
+            for _, entity_id in ipairs(tag_temp_entity_list) do
                 if entity_id.hash == puppet_id.hash then
                     return
                 end
