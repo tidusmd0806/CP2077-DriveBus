@@ -1,1 +1,1 @@
-{"language_index":1,"version":"1.1.0","ride_special_npc_rate":5,"keybind_table":[{"pad":"IK_Pad_X_SQUARE","name":"auto_drive","is_hold":false,"key":"IK_Z"},{"pad":"IK_Pad_DigitLeft","name":"window_toggle","is_hold":false,"key":"IK_Y"}],"ride_npc_num":-1}
+{"ride_special_npc_rate":5,"version":"1.1.2","keybind_table":[{"name":"auto_drive","is_hold":false,"key":"IK_Z","pad":"IK_Pad_X_SQUARE"},{"name":"window_toggle","is_hold":false,"key":"IK_Y","pad":"IK_Pad_DigitLeft"}],"language_index":1,"ride_npc_num":-1}
