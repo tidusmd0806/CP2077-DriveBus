@@ -174,21 +174,19 @@ end
 
 function Core:SetOverride()
 
-    Override("VehicleObject", "CanUnmount", function(this, isPlayer, mountedObject, checkSpecificDirection, wrapped_method)
-
+    Override("VehicleTransition", "IsUnmountDirectionClosest", function(this, state_context, unmount_direction, wrapped_method)
         if self.available_event_obj:GetStatus() == Def.VehicleStatus.Mounted then
-            local veh_unmount_pos = vehicleUnmountPosition.new()
-            local seat = self.available_bus_obj:GetPlayerSeat()
-            if string.find(seat, "left") then
-                veh_unmount_pos.direction = vehicleExitDirection.Left
-            elseif string.find(seat, "right") then
-                veh_unmount_pos.direction = vehicleExitDirection.Right
-            else
-                veh_unmount_pos.direction = vehicleExitDirection.NoDirection
-            end
-            return veh_unmount_pos
+            return true
         else
-            return wrapped_method(this, isPlayer, mountedObject, checkSpecificDirection)
+            return wrapped_method(state_context, unmount_direction)
+        end
+    end)
+
+    Override("VehicleTransition", "IsUnmountDirectionOpposite", function(this, state_context, unmount_direction, wrapped_method)
+        if self.available_event_obj:GetStatus() == Def.VehicleStatus.Mounted then
+            return false
+        else
+            return wrapped_method(state_context, unmount_direction)
         end
     end)
 

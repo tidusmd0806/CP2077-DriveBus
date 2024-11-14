@@ -13,7 +13,7 @@ local Debug = require("Debug/debug.lua")
 
 DAB = {
 	description = "Drive Bus",
-	version = "1.1.1",
+	version = "1.1.2",
     -- system
     is_ready = false,
     time_resolution = 0.01,
@@ -117,7 +117,7 @@ end)
 registerForEvent('onInit', function()
 
     if not DAB:CheckDependencies() then
-        print('[DAB][Error] Drive an Aerial Vehicle Mod failed to load due to missing dependencies.')
+        print('[DAB][Error] Drive an Bus Mod failed to load due to missing dependencies.')
         return
     end
 
@@ -131,7 +131,7 @@ registerForEvent('onInit', function()
 
     DAB.is_ready = true
 
-    print('[DAB][Info] Finished initializing Drive an Aerial Vehicle Mod.')
+    print('[DAB][Info] Finished initializing Drive an Bus Mod.')
 
 end)
 
