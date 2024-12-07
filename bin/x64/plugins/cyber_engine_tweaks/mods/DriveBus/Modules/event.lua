@@ -314,7 +314,7 @@ function Event:CheckDoorOpenDistance()
     local player_world_pos = Game.GetPlayer():GetWorldPosition()
     local bus_world_pos = self.bus_obj.entity:GetWorldPosition()
     local disatnce = Vector4.Distance(player_world_pos, bus_world_pos)
-    if disatnce < self.door_control_distance then
+    if Game.GetPlayer():GetMountedVehicle() == nil and disatnce < self.door_control_distance then
         if self.bus_obj:GetDoorState() == Def.DoorEvent.Close then
             self.bus_obj:ControlDoor(Def.DoorEvent.Open)
         end
