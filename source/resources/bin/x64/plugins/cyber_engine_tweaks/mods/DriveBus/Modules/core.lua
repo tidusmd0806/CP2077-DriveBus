@@ -72,7 +72,6 @@ function Core:Init()
 end
 
 function Core:SetObserve()
-
     Observe("VehicleMinimapMappinComponent", "OnInitialize", function(this, minimapPOIMappinController, vehicleMappin)
         local vehicle = vehicleMappin:GetVehicle()
         local veh_id = vehicle:GetTDBID()
@@ -142,7 +141,7 @@ function Core:SetObserve()
         end
     end)
 
-    Observe("VehicleSystem", "SpawnPlayerVehicle", function(this, vehicle_type)
+    Observe("VehicleSystem", "SpawnActivePlayerVehicle", function(this, vehicle_type)
         local record_id = this:GetActivePlayerVehicle(vehicle_type).recordID
         local bus_record_id = TweakDBID.new(DAB.bus_record)
         if record_id.hash == bus_record_id.hash then
@@ -169,11 +168,9 @@ function Core:SetObserve()
             end)
         end
     end)
-
 end
 
 function Core:SetOverride()
-
     Override("VehicleTransition", "IsUnmountDirectionClosest", function(this, state_context, unmount_direction, wrapped_method)
         if self.available_event_obj:GetStatus() == Def.VehicleStatus.Mounted then
             return true
@@ -234,11 +231,9 @@ function Core:SetOverride()
         end
         wrapped_method(context)
     end)
-
 end
 
 function Core:SetTranslationNameList()
-
     self.language_file_list = {}
     self.language_name_list = {}
 
@@ -272,11 +267,9 @@ function Core:SetTranslationNameList()
             table.insert(self.language_name_list, language_table.language)
         end
     end
-
 end
 
 function Core:StoreTranslationtableList()
-
     self.translation_table_list = {}
     for _, file in ipairs(self.language_file_list) do
         local language_table = Utils:ReadJson(DAB.language_path .. "/" .. file.name)
@@ -284,11 +277,9 @@ function Core:StoreTranslationtableList()
             table.insert(self.translation_table_list, language_table)
         end
     end
-
 end
 
 function Core:GetTranslationText(text)
-
     if self.translation_table_list == {} then
         self.log_obj:Record(LogLevel.Critical, "Language File is invalid")
         return nil
@@ -305,11 +296,9 @@ function Core:GetTranslationText(text)
     end
 
     return translated_text
-
 end
 
 function Core:LoadSetting()
-
     local setting_data = Utils:ReadJson(DAB.user_setting_path)
     if setting_data == nil then
         self.log_obj:Record(LogLevel.Info, "Failed to load setting data. Restore default setting")
@@ -319,7 +308,6 @@ function Core:LoadSetting()
     if setting_data.version == DAB.version then
         DAB.user_setting_table = setting_data
     end
-
 end
 
 function Core:LoadNPCTweakID()
@@ -341,7 +329,6 @@ function Core:IsAutoDriveByOtherMod()
 end
 
 function Core:ChoiceAction(action_name, action_type, action_value)
-
     if action_name == "ChoiceApply" and action_type == "BUTTON_PRESSED" and action_value > 0 then
         if self.is_locked_choice_action then
             return
@@ -371,12 +358,10 @@ function Core:ChoiceAction(action_name, action_type, action_value)
         Cron.After(0.1, function()
             self.is_locked_choice_action = false
         end)
-
     end
 end
 
 function Core:ChoiceSelect(command)
-
     local choice_num = self.available_event_obj.hud_obj.choice_num
 
     if command == 0 then
@@ -414,11 +399,9 @@ function Core:ChoiceSelect(command)
     end
 
     self.available_event_obj.hud_obj:ShowChoice(self.available_event_obj:GetChoiceVariation())
-
 end
 
 function Core:ConvertPressButtonAction(key)
-
     local keybind_name = ""
     for _, keybind in ipairs(DAB.user_setting_table.keybind_table) do
         if key == keybind.key or key == keybind.pad then
@@ -427,11 +410,9 @@ function Core:ConvertPressButtonAction(key)
             return
         end
     end
-
 end
 
 function Core:ActionKeybind(keybind_name)
-
     if keybind_name == "auto_drive" then
         if self:IsAutoDrive() then
             self:StopAutoDrive()
@@ -441,11 +422,9 @@ function Core:ActionKeybind(keybind_name)
     elseif keybind_name == "window_toggle" then
         self.available_bus_obj:ControlWindow(Def.WindowEvent.Change)
     end
-
 end
 
 function Core:RunAutoDrive()
-
     if self:IsAutoDrive() then
         self.log_obj:Record(LogLevel.Warning, "Auto drive is already running.")
         return
@@ -479,7 +458,6 @@ function Core:StopAutoDrive()
 end
 
 function Core:CreateNPC(npc_id, is_persist)
-
     if not self.available_bus_obj:IsInWorld() then
         self.log_obj:Record(LogLevel.Warning, "Bus is not in the world.")
         return
@@ -521,7 +499,6 @@ function Core:CreateNPC(npc_id, is_persist)
 end
 
 function Core:SetNPC(is_persist, is_unset)
-
     self:LoadNPCTweakID()
 
     if is_unset then
@@ -557,11 +534,9 @@ function Core:SetNPC(is_persist, is_unset)
             end
         end)
     end
-
 end
 
 function Core:UnsetNPC(is_persist)
-
     local tag_entity_list = {}
     if is_persist then
         tag_entity_list = Game.GetDynamicEntitySystem():GetTaggedIDs("BusNPC_persist")
@@ -575,11 +550,9 @@ function Core:UnsetNPC(is_persist)
     for _, entity_id in ipairs(tag_entity_list) do
         Game.GetDynamicEntitySystem():DeleteEntity(entity_id)
     end
-
 end
 
 function Core:CheckCommunityBus()
-
     Cron.Every(0.1, {tick=1}, function(timer)
         timer.tick = timer.tick + 1
         self:SetLookAtCommunityBus()
@@ -591,11 +564,9 @@ function Core:CheckCommunityBus()
             end
         end
     end)
-
 end
 
 function Core:SetLookAtCommunityBus()
-
     if self.community_event_obj:GetStatus() == Def.VehicleStatus.Mounted then
         return true
     end
@@ -626,7 +597,6 @@ function Core:SetLookAtCommunityBus()
         self.available_event_obj = self.event_obj
         return false
     end
-
 end
 
 return Core

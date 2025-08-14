@@ -13,7 +13,7 @@ local Debug = require("Debug/debug.lua")
 
 DAB = {
 	description = "Drive Bus",
-	version = "1.1.3",
+	version = "1.1.4",
     -- system
     is_ready = false,
     time_resolution = 0.01,
@@ -25,10 +25,10 @@ DAB = {
     bus_record = "Vehicle.cs_savable_mahir_mt28_coach_dab",
     bus_appearance = "mahir_mt28_basic_coach_01_dab",
     -- version check
-    cet_required_version = 32.1, -- 1.32.1
-    cet_recommended_version = 32.3, -- 1.32.3
-    codeware_required_version = 8.2, -- 1.8.2
-    codeware_recommended_version = 9.2, -- 1.9.2
+    cet_required_version = 36.0, -- 1.36.0
+    cet_recommended_version = 36.0, -- 1.36.0
+    codeware_required_version = 17.0, -- 1.17.0
+    codeware_recommended_version = 17.0, -- 1.17.0
     native_settings_required_version = 1.96,
     cet_version_num = 0,
     codeware_version_num = 0,
