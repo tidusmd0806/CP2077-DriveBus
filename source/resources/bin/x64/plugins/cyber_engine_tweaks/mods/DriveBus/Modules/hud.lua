@@ -23,6 +23,22 @@ function HUD:New()
     return setmetatable(obj, self)
 end
 
+function HUD:IsInteractionUIReady()
+
+    if self.interaction_ui_base == nil then
+        return false
+    end
+
+    if not IsDefined(self.interaction_ui_base) then
+        self.log_obj:Record(LogLevel.Debug, "Interaction UI base handle expired.")
+        self.interaction_ui_base = nil
+        return false
+    end
+
+    return true
+
+end
+
 function HUD:ShowStandHint()
     Game.GetUISystem():QueueEvent(self.show_stand_hint_event)
 end
@@ -101,6 +117,11 @@ function HUD:ShowChoice(variation)
         self.selected_choice_index = self.choice_num - 1
     end
 
+    if not self:IsInteractionUIReady() then
+        self.log_obj:Record(LogLevel.Info, "Interaction UI base is not ready. Skipping ShowChoice.")
+        return
+    end
+
     local ui_interaction_define = GetAllBlackboardDefs().UIInteractions
     local interaction_blackboard = Game.GetBlackboardSystem():Get(ui_interaction_define)
 
@@ -123,7 +144,8 @@ function HUD:HideChoice()
     local interaction_blackboard = Game.GetBlackboardSystem():Get(ui_interaction_define)
 
     local data = interaction_blackboard:GetVariant(ui_interaction_define.DialogChoiceHubs)
-    if self.interaction_ui_base == nil then
+    if not self:IsInteractionUIReady() then
+        self.log_obj:Record(LogLevel.Info, "Interaction UI base is not ready. Skipping HideChoice.")
         return
     end
     self.interaction_ui_base:OnDialogsData(data)

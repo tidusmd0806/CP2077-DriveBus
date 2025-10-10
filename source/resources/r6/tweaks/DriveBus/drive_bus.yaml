@@ -1,3 +1,9 @@
+# FPP Camera Params for DAB vehicles
+Vehicle.VehicleDriverFPPCameraParamsDefault_DAB:
+  $base: Vehicle.VehicleDriverFPPCameraParamsDefault
+  forward_offset_value: -0.2
+  is_forward_offset : 1
+
 # MT28
 Vehicle.cs_savable_mahir_mt28_coach_dab:
   $base: Vehicle.cs_savable_mahir_mt28_coach
@@ -5,6 +11,7 @@ Vehicle.cs_savable_mahir_mt28_coach_dab:
   icon:
     atlasResourcePath: base/gameplay/gui/common/icons/weapon_manufacturers.inkatlas
     atlasPartName: mahir
+  vehDriver_FPPCameraParams: Vehicle.VehicleDriverFPPCameraParamsDefault_DAB
 
 Vehicle.cs_savable_mahir_mt28_coach_dab.dealerAtlasPath: "base/gameplay/gui/common/icons/codex/assets_fullscreen25.inkatlas"
 Vehicle.cs_savable_mahir_mt28_coach_dab.dealerPartName: "v_mahir_mt28_coach_full"
