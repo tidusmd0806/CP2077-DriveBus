@@ -47,6 +47,14 @@ function Debug:SetObserver()
 
     if not self.is_set_observer then
         -- reserved
+        Observe("AutoDriveSystem", "OnAttach",
+        ---@param this AutoDriveSystem
+        function(this)
+            -- method has just been called
+            print("[DAB][Debug] AutoDriveSystem OnAttach")
+            self.auto_drive_system = this
+        end)
+
     end
     self.is_set_observer = true
 
@@ -286,6 +294,18 @@ function Debug:ImGuiExcuteFunction()
     if ImGui.Button("TF5") then
         DAB.core_obj.community_bus_obj:SendAutoDriveToHereEvent()
         print("Excute Test Function 5")
+    end
+    ImGui.SameLine()
+    if ImGui.Button("TF6") then
+        local req = ToggleFreeRoamRequest.new()
+        self.auto_drive_system:OnToggleFreeRoamRequest(req)
+        print("Excute Test Function 6")
+    end
+     ImGui.SameLine()
+    if ImGui.Button("TF7") then
+        local req = ToggleFreeRoamRequest.new()
+        print(self.auto_drive_system:GetAutodriveAvailable())
+        print("Excute Test Function 7")
     end
 end
 

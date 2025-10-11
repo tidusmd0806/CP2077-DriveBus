@@ -13,7 +13,7 @@ local Debug = require("Debug/debug.lua")
 
 DAB = {
 	description = "Drive Bus",
-	version = "1.1.4",
+	version = "1.2.0",
     -- system
     is_ready = false,
     time_resolution = 0.01,
@@ -199,6 +199,10 @@ end
 
 function DAB:Version()
     return DAB.version
+end
+
+function DAB:ToggleDebugMode()
+    DAB.is_debug_mode = not DAB.is_debug_mode
 end
 
 return DAB

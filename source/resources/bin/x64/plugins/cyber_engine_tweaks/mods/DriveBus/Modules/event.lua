@@ -63,11 +63,21 @@ function Event:SetObserve()
     end)
 
     Observe("InteractionUIBase", "OnInitialize", function(this)
-        self.hud_obj.interaction_ui_base = this
+        if IsDefined(this) then
+            self.hud_obj.interaction_ui_base = this
+        end
     end)
 
     Observe("InteractionUIBase", "OnDialogsData", function(this)
-        self.hud_obj.interaction_ui_base = this
+        if IsDefined(this) then
+            self.hud_obj.interaction_ui_base = this
+        end
+    end)
+
+    Observe("InteractionUIBase", "OnUninitialize", function(this)
+        if self.hud_obj.interaction_ui_base == this then
+            self.hud_obj.interaction_ui_base = nil
+        end
     end)
 
 end
